@@ -1,0 +1,487 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>Memory Narrative Engine — Console</title>
+<style>
+  :root {
+    --bg: #12151c;
+    --panel: #1a1f29;
+    --panel-raised: #212736;
+    --border: #2c3342;
+    --ink: #e9e4d8;
+    --ink-dim: #9aa1b0;
+    --lantern: #d9a441;
+    --lantern-dim: #8a6a2e;
+    --teal: #4fa8a0;
+    --error: #d9634a;
+  }
+
+  * { box-sizing: border-box; }
+
+  body {
+    margin: 0;
+    background: radial-gradient(ellipse at top, #1a1f2c 0%, var(--bg) 60%);
+    color: var(--ink);
+    font-family: ui-monospace, "SF Mono", "Cascadia Code", Consolas, monospace;
+    min-height: 100vh;
+    padding: 40px 20px;
+  }
+
+  .wrap {
+    max-width: 920px;
+    margin: 0 auto;
+  }
+
+  header {
+    display: flex;
+    align-items: baseline;
+    justify-content: space-between;
+    border-bottom: 1px solid var(--border);
+    padding-bottom: 18px;
+    margin-bottom: 28px;
+  }
+
+  h1 {
+    font-family: Georgia, "Times New Roman", serif;
+    font-size: 26px;
+    font-weight: 700;
+    letter-spacing: 0.3px;
+    margin: 0;
+    color: var(--ink);
+  }
+
+  h1 span {
+    color: var(--lantern);
+  }
+
+  .tagline {
+    font-size: 12px;
+    color: var(--ink-dim);
+    margin-top: 4px;
+  }
+
+  .endpoint-row {
+    display: flex;
+    gap: 8px;
+    align-items: center;
+    font-size: 12px;
+    color: var(--ink-dim);
+  }
+
+  .endpoint-row input {
+    background: var(--panel-raised);
+    border: 1px solid var(--border);
+    color: var(--ink);
+    padding: 6px 10px;
+    border-radius: 4px;
+    font-family: inherit;
+    font-size: 12px;
+    width: 260px;
+  }
+
+  .grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 24px;
+  }
+
+  @media (max-width: 800px) {
+    .grid { grid-template-columns: 1fr; }
+  }
+
+  .panel {
+    background: var(--panel);
+    border: 1px solid var(--border);
+    border-radius: 8px;
+    padding: 20px;
+    display: flex;
+    flex-direction: column;
+  }
+
+  .panel-label {
+    font-size: 11px;
+    text-transform: uppercase;
+    letter-spacing: 1.5px;
+    color: var(--lantern);
+    margin-bottom: 12px;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+  }
+
+  .panel-label::before {
+    content: "";
+    width: 6px;
+    height: 6px;
+    border-radius: 50%;
+    background: var(--lantern);
+    box-shadow: 0 0 8px var(--lantern);
+  }
+
+  textarea {
+    width: 100%;
+    flex: 1;
+    min-height: 340px;
+    background: var(--panel-raised);
+    color: var(--ink);
+    border: 1px solid var(--border);
+    border-radius: 6px;
+    padding: 14px;
+    font-family: inherit;
+    font-size: 13px;
+    line-height: 1.6;
+    resize: vertical;
+  }
+
+  textarea:focus {
+    outline: none;
+    border-color: var(--lantern-dim);
+  }
+
+  .btn-row {
+    display: flex;
+    gap: 10px;
+    margin-top: 14px;
+  }
+
+  button {
+    font-family: inherit;
+    font-size: 13px;
+    padding: 10px 18px;
+    border-radius: 6px;
+    border: 1px solid var(--border);
+    cursor: pointer;
+    transition: all 0.15s ease;
+  }
+
+  button:focus-visible {
+    outline: 2px solid var(--teal);
+    outline-offset: 2px;
+  }
+
+  .btn-primary {
+    background: var(--lantern);
+    color: #1a1508;
+    border: 1px solid var(--lantern);
+    font-weight: 700;
+    flex: 1;
+  }
+
+  .btn-primary:hover:not(:disabled) {
+    background: #e6b455;
+  }
+
+  .btn-primary:disabled {
+    background: var(--lantern-dim);
+    border-color: var(--lantern-dim);
+    cursor: not-allowed;
+    color: #4a3d1c;
+  }
+
+  .btn-secondary {
+    background: transparent;
+    color: var(--ink-dim);
+  }
+
+  .btn-secondary:hover {
+    color: var(--ink);
+    border-color: var(--ink-dim);
+  }
+
+  .output {
+    flex: 1;
+    min-height: 340px;
+    display: flex;
+    flex-direction: column;
+    gap: 16px;
+  }
+
+  .story-box {
+    background: var(--panel-raised);
+    border: 1px solid var(--border);
+    border-left: 3px solid var(--lantern);
+    border-radius: 6px;
+    padding: 18px;
+    font-family: Georgia, "Times New Roman", serif;
+    font-size: 15px;
+    line-height: 1.7;
+    color: var(--ink);
+    min-height: 120px;
+  }
+
+  .empty-state {
+    color: var(--ink-dim);
+    font-size: 13px;
+    font-style: italic;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    height: 100%;
+    text-align: center;
+    padding: 20px;
+  }
+
+  .section-title {
+    font-size: 10px;
+    text-transform: uppercase;
+    letter-spacing: 1.2px;
+    color: var(--teal);
+    margin-bottom: 8px;
+  }
+
+  .chip-list {
+    display: flex;
+    flex-direction: column;
+    gap: 6px;
+  }
+
+  .chip {
+    background: var(--panel-raised);
+    border: 1px solid var(--border);
+    border-radius: 4px;
+    padding: 8px 12px;
+    font-size: 12px;
+    color: var(--ink-dim);
+  }
+
+  .status-bar {
+    margin-top: 20px;
+    font-size: 12px;
+    padding: 10px 14px;
+    border-radius: 6px;
+    display: none;
+  }
+
+  .status-bar.show { display: block; }
+
+  .status-loading {
+    background: rgba(79, 168, 160, 0.1);
+    border: 1px solid var(--teal);
+    color: var(--teal);
+  }
+
+  .status-error {
+    background: rgba(217, 99, 74, 0.1);
+    border: 1px solid var(--error);
+    color: var(--error);
+    white-space: pre-wrap;
+  }
+
+  .status-success {
+    background: rgba(217, 164, 65, 0.1);
+    border: 1px solid var(--lantern);
+    color: var(--lantern);
+  }
+
+  .spinner {
+    display: inline-block;
+    width: 10px;
+    height: 10px;
+    border: 2px solid var(--teal);
+    border-top-color: transparent;
+    border-radius: 50%;
+    animation: spin 0.7s linear infinite;
+    margin-right: 8px;
+    vertical-align: middle;
+  }
+
+  @keyframes spin {
+    to { transform: rotate(360deg); }
+  }
+</style>
+</head>
+<body>
+<div class="wrap">
+  <header>
+    <div>
+      <h1>Memory<span>Narrative</span>Engine</h1>
+      <div class="tagline">send a game event → receive the next part of the story</div>
+    </div>
+    <div class="endpoint-row">
+      <label for="endpoint">endpoint</label>
+      <input id="endpoint" value="http://localhost:8000/game/event" />
+    </div>
+  </header>
+
+  <div class="grid">
+    <div class="panel">
+      <div class="panel-label">Event JSON</div>
+      <textarea id="input-json" spellcheck="false"></textarea>
+      <div class="btn-row">
+        <button class="btn-primary" id="run-btn">Generate Narration</button>
+        <button class="btn-secondary" id="reset-btn">Reset Example</button>
+      </div>
+    </div>
+
+    <div class="panel">
+      <div class="panel-label">Narration</div>
+      <div class="output" id="output">
+        <div class="empty-state">The story will appear here once you generate it.</div>
+      </div>
+    </div>
+  </div>
+
+  <div class="status-bar" id="status-bar"></div>
+</div>
+
+<script>
+  const EXAMPLE_EVENT = {
+    session_id: "game_001",
+    event: {
+      type: "interaction",
+      actor: "player",
+      action: "help",
+      target: "Emma",
+      location: "Farm"
+    },
+    world_state: {
+      day: 5,
+      weather: "Sunny",
+      reputation: 45
+    },
+    relationships: {
+      Emma: { trust: 60, friendship: 55, respect: 40, vote: 25 }
+    }
+  };
+
+  const inputEl = document.getElementById("input-json");
+  const outputEl = document.getElementById("output");
+  const statusEl = document.getElementById("status-bar");
+  const runBtn = document.getElementById("run-btn");
+  const resetBtn = document.getElementById("reset-btn");
+  const endpointEl = document.getElementById("endpoint");
+
+  function loadExample() {
+    inputEl.value = JSON.stringify(EXAMPLE_EVENT, null, 2);
+  }
+  loadExample();
+  resetBtn.addEventListener("click", loadExample);
+
+  function setStatus(kind, message) {
+    statusEl.className = "status-bar show status-" + kind;
+    statusEl.innerHTML = kind === "loading"
+      ? '<span class="spinner"></span>' + message
+      : message;
+  }
+
+  function clearStatus() {
+    statusEl.className = "status-bar";
+    statusEl.innerHTML = "";
+  }
+
+  function renderEmpty(message) {
+    outputEl.innerHTML = '<div class="empty-state">' + message + '</div>';
+  }
+
+  function renderResult(data) {
+    const relUpdates = (data.relationship_updates || [])
+      .map(u => {
+        const deltas = [
+          u.trust_delta ? `trust ${u.trust_delta > 0 ? "+" : ""}${u.trust_delta}` : null,
+          u.friendship_delta ? `friendship ${u.friendship_delta > 0 ? "+" : ""}${u.friendship_delta}` : null,
+          u.respect_delta ? `respect ${u.respect_delta > 0 ? "+" : ""}${u.respect_delta}` : null,
+          u.vote_delta ? `vote ${u.vote_delta > 0 ? "+" : ""}${u.vote_delta}` : null,
+        ].filter(Boolean).join(", ");
+        return '<div class="chip"><strong>' + escapeHtml(u.npc) + '</strong> — ' + escapeHtml(deltas || "no change") +
+          (u.reason ? '<br><span style="opacity:0.7">' + escapeHtml(u.reason) + '</span>' : "") + '</div>';
+      })
+      .join("") || '<div class="chip">No NPCs affected.</div>';
+
+    const world = data.world_updates || {};
+    const worldChips = [];
+    if (world.reputation_delta) {
+      worldChips.push('<div class="chip">Reputation ' + (world.reputation_delta > 0 ? "+" : "") + world.reputation_delta + '</div>');
+    }
+    (world.new_events || []).forEach(e => worldChips.push('<div class="chip">' + escapeHtml(e) + '</div>'));
+    const worldBlock = worldChips.join("") || '<div class="chip">No world changes.</div>';
+
+    const newMemories = (data.new_memories || [])
+      .map(m => '<div class="chip">' + escapeHtml(m) + '</div>')
+      .join("") || '<div class="chip">Nothing new extracted.</div>';
+
+    const nextActions = (data.next_actions || [])
+      .map(a => '<div class="chip">' + escapeHtml(a) + '</div>')
+      .join("") || '<div class="chip">No suggestions.</div>';
+
+    outputEl.innerHTML = `
+      <div class="story-box">${escapeHtml(data.story || "")}</div>
+      <div>
+        <div class="section-title">Relationship updates</div>
+        <div class="chip-list">${relUpdates}</div>
+      </div>
+      <div>
+        <div class="section-title">World updates</div>
+        <div class="chip-list">${worldBlock}</div>
+      </div>
+      <div>
+        <div class="section-title">New memories</div>
+        <div class="chip-list">${newMemories}</div>
+      </div>
+      <div>
+        <div class="section-title">Suggested next actions</div>
+        <div class="chip-list">${nextActions}</div>
+      </div>
+    `;
+  }
+
+  function escapeHtml(str) {
+    const div = document.createElement("div");
+    div.textContent = str;
+    return div.innerHTML;
+  }
+
+  async function runRequest() {
+    let payload;
+    try {
+      payload = JSON.parse(inputEl.value);
+    } catch (err) {
+      setStatus("error", "Invalid JSON — fix the syntax before sending:\n" + err.message);
+      return;
+    }
+
+    const url = endpointEl.value.trim();
+    if (!url) {
+      setStatus("error", "Enter the endpoint URL for your running backend.");
+      return;
+    }
+
+    runBtn.disabled = true;
+    setStatus("loading", "Contacting the narrative engine…");
+    renderEmpty("Generating…");
+
+    try {
+      const response = await fetch(url, {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify(payload)
+      });
+
+      if (!response.ok) {
+        const text = await response.text();
+        throw new Error("Server responded " + response.status + ": " + text);
+      }
+
+      const data = await response.json();
+      renderResult(data);
+      setStatus("success", "Story generated successfully.");
+    } catch (err) {
+      renderEmpty("No story yet — see the error below.");
+      setStatus(
+        "error",
+        "Request failed: " + err.message +
+        "\n\nCheck that:\n" +
+        "  • the FastAPI server is running (uv run uvicorn app.main:app --reload --port 8000)\n" +
+        "  • the endpoint URL above matches your server address\n" +
+        "  • your .env has valid MISTRAL_API_KEY / COGNEE_API_KEY values"
+      );
+    } finally {
+      runBtn.disabled = false;
+    }
+  }
+
+  runBtn.addEventListener("click", runRequest);
+</script>
+</body>
+</html>
