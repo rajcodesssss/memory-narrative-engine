@@ -67,7 +67,7 @@ async def get_health() -> HealthStatus:
     return HealthStatus(status="ok", app_env=settings.app_env)
 
 
-@app.post("/game/event", response_model=NarrativeResponse)
+@app.post("/event", response_model=NarrativeResponse)
 async def post_game_event(game_event: GameEvent) -> NarrativeResponse:
     """Process a structured game event and return the next story fragment.
 

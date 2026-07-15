@@ -1,412 +1,464 @@
 <!DOCTYPE html>
 <html lang="en">
+
 <head>
-<meta charset="UTF-8" />
-<meta name="viewport" content="width=device-width, initial-scale=1.0" />
-<title>Memory Narrative Engine — Console</title>
-<style>
-  :root {
-    --bg: #12151c;
-    --panel: #1a1f29;
-    --panel-raised: #212736;
-    --border: #2c3342;
-    --ink: #e9e4d8;
-    --ink-dim: #9aa1b0;
-    --lantern: #d9a441;
-    --lantern-dim: #8a6a2e;
-    --teal: #4fa8a0;
-    --error: #d9634a;
-  }
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Memory Narrative Engine — Console</title>
+  <style>
+    :root {
+      --bg: #12151c;
+      --panel: #1a1f29;
+      --panel-raised: #212736;
+      --border: #2c3342;
+      --ink: #e9e4d8;
+      --ink-dim: #9aa1b0;
+      --lantern: #d9a441;
+      --lantern-dim: #8a6a2e;
+      --teal: #4fa8a0;
+      --error: #d9634a;
+    }
 
-  * { box-sizing: border-box; }
+    * {
+      box-sizing: border-box;
+    }
 
-  body {
-    margin: 0;
-    background: radial-gradient(ellipse at top, #1a1f2c 0%, var(--bg) 60%);
-    color: var(--ink);
-    font-family: ui-monospace, "SF Mono", "Cascadia Code", Consolas, monospace;
-    min-height: 100vh;
-    padding: 40px 20px;
-  }
+    body {
+      margin: 0;
+      background: radial-gradient(ellipse at top, #1a1f2c 0%, var(--bg) 60%);
+      color: var(--ink);
+      font-family: ui-monospace, "SF Mono", "Cascadia Code", Consolas, monospace;
+      min-height: 100vh;
+      padding: 40px 20px;
+    }
 
-  .wrap {
-    max-width: 920px;
-    margin: 0 auto;
-  }
+    .wrap {
+      max-width: 920px;
+      margin: 0 auto;
+    }
 
-  header {
-    display: flex;
-    align-items: baseline;
-    justify-content: space-between;
-    border-bottom: 1px solid var(--border);
-    padding-bottom: 18px;
-    margin-bottom: 28px;
-  }
+    header {
+      display: flex;
+      align-items: baseline;
+      justify-content: space-between;
+      flex-wrap: wrap;
+      gap: 14px;
+      border-bottom: 1px solid var(--border);
+      padding-bottom: 18px;
+      margin-bottom: 28px;
+    }
 
-  h1 {
-    font-family: Georgia, "Times New Roman", serif;
-    font-size: 26px;
-    font-weight: 700;
-    letter-spacing: 0.3px;
-    margin: 0;
-    color: var(--ink);
-  }
+    h1 {
+      font-family: Georgia, "Times New Roman", serif;
+      font-size: 26px;
+      font-weight: 700;
+      letter-spacing: 0.3px;
+      margin: 0;
+      color: var(--ink);
+    }
 
-  h1 span {
-    color: var(--lantern);
-  }
+    h1 span {
+      color: var(--lantern);
+    }
 
-  .tagline {
-    font-size: 12px;
-    color: var(--ink-dim);
-    margin-top: 4px;
-  }
+    .tagline {
+      font-size: 12px;
+      color: var(--ink-dim);
+      margin-top: 4px;
+    }
 
-  .endpoint-row {
-    display: flex;
-    gap: 8px;
-    align-items: center;
-    font-size: 12px;
-    color: var(--ink-dim);
-  }
+    .endpoint-row {
+      display: flex;
+      flex-direction: column;
+      gap: 4px;
+      font-size: 11px;
+      color: var(--ink-dim);
+    }
 
-  .endpoint-row input {
-    background: var(--panel-raised);
-    border: 1px solid var(--border);
-    color: var(--ink);
-    padding: 6px 10px;
-    border-radius: 4px;
-    font-family: inherit;
-    font-size: 12px;
-    width: 260px;
-  }
+    .endpoint-row label {
+      text-transform: uppercase;
+      letter-spacing: 0.8px;
+    }
 
-  .grid {
-    display: grid;
-    grid-template-columns: 1fr 1fr;
-    gap: 24px;
-  }
+    .endpoint-row input {
+      background: var(--panel-raised);
+      border: 1px solid var(--border);
+      color: var(--ink);
+      padding: 7px 10px;
+      border-radius: 4px;
+      font-family: inherit;
+      font-size: 12px;
+      width: 340px;
+    }
 
-  @media (max-width: 800px) {
-    .grid { grid-template-columns: 1fr; }
-  }
+    .grid {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 24px;
+    }
 
-  .panel {
-    background: var(--panel);
-    border: 1px solid var(--border);
-    border-radius: 8px;
-    padding: 20px;
-    display: flex;
-    flex-direction: column;
-  }
+    @media (max-width: 800px) {
+      .grid {
+        grid-template-columns: 1fr;
+      }
 
-  .panel-label {
-    font-size: 11px;
-    text-transform: uppercase;
-    letter-spacing: 1.5px;
-    color: var(--lantern);
-    margin-bottom: 12px;
-    display: flex;
-    align-items: center;
-    gap: 8px;
-  }
+      .endpoint-row input {
+        width: 100%;
+      }
+    }
 
-  .panel-label::before {
-    content: "";
-    width: 6px;
-    height: 6px;
-    border-radius: 50%;
-    background: var(--lantern);
-    box-shadow: 0 0 8px var(--lantern);
-  }
+    .panel {
+      background: var(--panel);
+      border: 1px solid var(--border);
+      border-radius: 8px;
+      padding: 20px;
+      display: flex;
+      flex-direction: column;
+    }
 
-  textarea {
-    width: 100%;
-    flex: 1;
-    min-height: 340px;
-    background: var(--panel-raised);
-    color: var(--ink);
-    border: 1px solid var(--border);
-    border-radius: 6px;
-    padding: 14px;
-    font-family: inherit;
-    font-size: 13px;
-    line-height: 1.6;
-    resize: vertical;
-  }
+    .panel-label {
+      font-size: 11px;
+      text-transform: uppercase;
+      letter-spacing: 1.5px;
+      color: var(--lantern);
+      margin-bottom: 12px;
+      display: flex;
+      align-items: center;
+      gap: 8px;
+    }
 
-  textarea:focus {
-    outline: none;
-    border-color: var(--lantern-dim);
-  }
+    .panel-label::before {
+      content: "";
+      width: 6px;
+      height: 6px;
+      border-radius: 50%;
+      background: var(--lantern);
+      box-shadow: 0 0 8px var(--lantern);
+    }
 
-  .btn-row {
-    display: flex;
-    gap: 10px;
-    margin-top: 14px;
-  }
+    textarea {
+      width: 100%;
+      flex: 1;
+      min-height: 260px;
+      background: var(--panel-raised);
+      color: var(--ink);
+      border: 1px solid var(--border);
+      border-radius: 6px;
+      padding: 14px;
+      font-family: inherit;
+      font-size: 13px;
+      line-height: 1.6;
+      resize: vertical;
+    }
 
-  button {
-    font-family: inherit;
-    font-size: 13px;
-    padding: 10px 18px;
-    border-radius: 6px;
-    border: 1px solid var(--border);
-    cursor: pointer;
-    transition: all 0.15s ease;
-  }
+    textarea:focus {
+      outline: none;
+      border-color: var(--lantern-dim);
+    }
 
-  button:focus-visible {
-    outline: 2px solid var(--teal);
-    outline-offset: 2px;
-  }
+    .quick-row {
+      display: flex;
+      gap: 8px;
+      flex-wrap: wrap;
+      margin-top: 12px;
+    }
 
-  .btn-primary {
-    background: var(--lantern);
-    color: #1a1508;
-    border: 1px solid var(--lantern);
-    font-weight: 700;
-    flex: 1;
-  }
+    .quick-btn {
+      background: var(--panel-raised);
+      border: 1px solid var(--border);
+      color: var(--ink-dim);
+      padding: 6px 12px;
+      border-radius: 999px;
+      font-size: 11.5px;
+      cursor: pointer;
+    }
 
-  .btn-primary:hover:not(:disabled) {
-    background: #e6b455;
-  }
+    .quick-btn:hover {
+      color: var(--ink);
+      border-color: var(--lantern-dim);
+    }
 
-  .btn-primary:disabled {
-    background: var(--lantern-dim);
-    border-color: var(--lantern-dim);
-    cursor: not-allowed;
-    color: #4a3d1c;
-  }
+    .btn-row {
+      display: flex;
+      gap: 10px;
+      margin-top: 14px;
+    }
 
-  .btn-secondary {
-    background: transparent;
-    color: var(--ink-dim);
-  }
+    button {
+      font-family: inherit;
+      font-size: 13px;
+      padding: 10px 18px;
+      border-radius: 6px;
+      border: 1px solid var(--border);
+      cursor: pointer;
+      transition: all 0.15s ease;
+    }
 
-  .btn-secondary:hover {
-    color: var(--ink);
-    border-color: var(--ink-dim);
-  }
+    button:focus-visible {
+      outline: 2px solid var(--teal);
+      outline-offset: 2px;
+    }
 
-  .output {
-    flex: 1;
-    min-height: 340px;
-    display: flex;
-    flex-direction: column;
-    gap: 16px;
-  }
+    .btn-primary {
+      background: var(--lantern);
+      color: #1a1508;
+      border: 1px solid var(--lantern);
+      font-weight: 700;
+      flex: 1;
+    }
 
-  .story-box {
-    background: var(--panel-raised);
-    border: 1px solid var(--border);
-    border-left: 3px solid var(--lantern);
-    border-radius: 6px;
-    padding: 18px;
-    font-family: Georgia, "Times New Roman", serif;
-    font-size: 15px;
-    line-height: 1.7;
-    color: var(--ink);
-    min-height: 120px;
-  }
+    .btn-primary:hover:not(:disabled) {
+      background: #e6b455;
+    }
 
-  .empty-state {
-    color: var(--ink-dim);
-    font-size: 13px;
-    font-style: italic;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    height: 100%;
-    text-align: center;
-    padding: 20px;
-  }
+    .btn-primary:disabled {
+      background: var(--lantern-dim);
+      border-color: var(--lantern-dim);
+      cursor: not-allowed;
+      color: #4a3d1c;
+    }
 
-  .section-title {
-    font-size: 10px;
-    text-transform: uppercase;
-    letter-spacing: 1.2px;
-    color: var(--teal);
-    margin-bottom: 8px;
-  }
+    .btn-secondary {
+      background: transparent;
+      color: var(--ink-dim);
+    }
 
-  .chip-list {
-    display: flex;
-    flex-direction: column;
-    gap: 6px;
-  }
+    .btn-secondary:hover {
+      color: var(--ink);
+      border-color: var(--ink-dim);
+    }
 
-  .chip {
-    background: var(--panel-raised);
-    border: 1px solid var(--border);
-    border-radius: 4px;
-    padding: 8px 12px;
-    font-size: 12px;
-    color: var(--ink-dim);
-  }
+    .output {
+      flex: 1;
+      min-height: 260px;
+      display: flex;
+      flex-direction: column;
+      gap: 16px;
+    }
 
-  .status-bar {
-    margin-top: 20px;
-    font-size: 12px;
-    padding: 10px 14px;
-    border-radius: 6px;
-    display: none;
-  }
+    .story-box {
+      background: var(--panel-raised);
+      border: 1px solid var(--border);
+      border-left: 3px solid var(--lantern);
+      border-radius: 6px;
+      padding: 18px;
+      font-family: Georgia, "Times New Roman", serif;
+      font-size: 15px;
+      line-height: 1.7;
+      color: var(--ink);
+      min-height: 100px;
+    }
 
-  .status-bar.show { display: block; }
+    .empty-state {
+      color: var(--ink-dim);
+      font-size: 13px;
+      font-style: italic;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      height: 100%;
+      text-align: center;
+      padding: 20px;
+    }
 
-  .status-loading {
-    background: rgba(79, 168, 160, 0.1);
-    border: 1px solid var(--teal);
-    color: var(--teal);
-  }
+    .section-title {
+      font-size: 10px;
+      text-transform: uppercase;
+      letter-spacing: 1.2px;
+      color: var(--teal);
+      margin-bottom: 8px;
+    }
 
-  .status-error {
-    background: rgba(217, 99, 74, 0.1);
-    border: 1px solid var(--error);
-    color: var(--error);
-    white-space: pre-wrap;
-  }
+    .chip-list {
+      display: flex;
+      flex-direction: column;
+      gap: 6px;
+    }
 
-  .status-success {
-    background: rgba(217, 164, 65, 0.1);
-    border: 1px solid var(--lantern);
-    color: var(--lantern);
-  }
+    .chip {
+      background: var(--panel-raised);
+      border: 1px solid var(--border);
+      border-radius: 4px;
+      padding: 8px 12px;
+      font-size: 12px;
+      color: var(--ink-dim);
+    }
 
-  .spinner {
-    display: inline-block;
-    width: 10px;
-    height: 10px;
-    border: 2px solid var(--teal);
-    border-top-color: transparent;
-    border-radius: 50%;
-    animation: spin 0.7s linear infinite;
-    margin-right: 8px;
-    vertical-align: middle;
-  }
+    .status-bar {
+      margin-top: 20px;
+      font-size: 12px;
+      padding: 10px 14px;
+      border-radius: 6px;
+      display: none;
+    }
 
-  @keyframes spin {
-    to { transform: rotate(360deg); }
-  }
-</style>
+    .status-bar.show {
+      display: block;
+    }
+
+    .status-loading {
+      background: rgba(79, 168, 160, 0.1);
+      border: 1px solid var(--teal);
+      color: var(--teal);
+    }
+
+    .status-error {
+      background: rgba(217, 99, 74, 0.1);
+      border: 1px solid var(--error);
+      color: var(--error);
+      white-space: pre-wrap;
+    }
+
+    .status-success {
+      background: rgba(217, 164, 65, 0.1);
+      border: 1px solid var(--lantern);
+      color: var(--lantern);
+    }
+
+    .spinner {
+      display: inline-block;
+      width: 10px;
+      height: 10px;
+      border: 2px solid var(--teal);
+      border-top-color: transparent;
+      border-radius: 50%;
+      animation: spin 0.7s linear infinite;
+      margin-right: 8px;
+      vertical-align: middle;
+    }
+
+    @keyframes spin {
+      to {
+        transform: rotate(360deg);
+      }
+    }
+  </style>
 </head>
+
 <body>
-<div class="wrap">
-  <header>
-    <div>
-      <h1>Memory<span>Narrative</span>Engine</h1>
-      <div class="tagline">send a game event → receive the next part of the story</div>
-    </div>
-    <div class="endpoint-row">
-      <label for="endpoint">endpoint</label>
-      <input id="endpoint" value="http://localhost:8000/game/event" />
-    </div>
-  </header>
+  <div class="wrap">
+    <header>
+      <div>
+        <h1>Memory<span>Narrative</span>Engine</h1>
+        <div class="tagline">send a game event → receive the next part of the story</div>
+      </div>
+      <div class="endpoint-row">
+        <label for="endpoint">endpoint</label>
+        <input id="endpoint" value="https://memory-narrative-engine.onrender.com/game/event" />
+      </div>
+    </header>
 
-  <div class="grid">
-    <div class="panel">
-      <div class="panel-label">Event JSON</div>
-      <textarea id="input-json" spellcheck="false"></textarea>
-      <div class="btn-row">
-        <button class="btn-primary" id="run-btn">Generate Narration</button>
-        <button class="btn-secondary" id="reset-btn">Reset Example</button>
+    <div class="grid">
+      <div class="panel">
+        <div class="panel-label">Event JSON</div>
+        <textarea id="input-json" spellcheck="false"></textarea>
+        <div class="quick-row" id="quick-row"></div>
+        <div class="btn-row">
+          <button class="btn-primary" id="run-btn">Generate Narration</button>
+          <button class="btn-secondary" id="reset-btn">Reset Example</button>
+        </div>
+      </div>
+
+      <div class="panel">
+        <div class="panel-label">Narration</div>
+        <div class="output" id="output">
+          <div class="empty-state">The story will appear here once you generate it.</div>
+        </div>
       </div>
     </div>
 
-    <div class="panel">
-      <div class="panel-label">Narration</div>
-      <div class="output" id="output">
-        <div class="empty-state">The story will appear here once you generate it.</div>
-      </div>
-    </div>
+    <div class="status-bar" id="status-bar"></div>
   </div>
 
-  <div class="status-bar" id="status-bar"></div>
-</div>
+  <script>
+    // NOTE: this assumes /game/event takes { session_id, action } — matching
+    // what your server logs showed ("Processing event for session 'game_001': help").
+    // If your actual Pydantic request model expects a richer body, edit
+    // EXAMPLE_EVENT below to match it.
+    const EXAMPLE_EVENT = {
+      session_id: "game_001",
+      action: "help"
+    };
 
-<script>
-  const EXAMPLE_EVENT = {
-    session_id: "game_001",
-    event: {
-      type: "interaction",
-      actor: "player",
-      action: "help",
-      target: "Emma",
-      location: "Farm"
-    },
-    world_state: {
-      day: 5,
-      weather: "Sunny",
-      reputation: 45
-    },
-    relationships: {
-      Emma: { trust: 60, friendship: 55, respect: 40, vote: 25 }
+    const QUICK_ACTIONS = ["help", "attack", "look around", "talk to Emma", "rest"];
+
+    const inputEl = document.getElementById("input-json");
+    const outputEl = document.getElementById("output");
+    const statusEl = document.getElementById("status-bar");
+    const runBtn = document.getElementById("run-btn");
+    const resetBtn = document.getElementById("reset-btn");
+    const endpointEl = document.getElementById("endpoint");
+    const quickRowEl = document.getElementById("quick-row");
+
+    function loadExample() {
+      inputEl.value = JSON.stringify(EXAMPLE_EVENT, null, 2);
     }
-  };
+    loadExample();
+    resetBtn.addEventListener("click", loadExample);
 
-  const inputEl = document.getElementById("input-json");
-  const outputEl = document.getElementById("output");
-  const statusEl = document.getElementById("status-bar");
-  const runBtn = document.getElementById("run-btn");
-  const resetBtn = document.getElementById("reset-btn");
-  const endpointEl = document.getElementById("endpoint");
+    QUICK_ACTIONS.forEach((action) => {
+      const btn = document.createElement("button");
+      btn.className = "quick-btn";
+      btn.type = "button";
+      btn.textContent = action;
+      btn.addEventListener("click", () => {
+        let current;
+        try {
+          current = JSON.parse(inputEl.value);
+        } catch {
+          current = { session_id: "game_001" };
+        }
+        current.action = action;
+        inputEl.value = JSON.stringify(current, null, 2);
+      });
+      quickRowEl.appendChild(btn);
+    });
 
-  function loadExample() {
-    inputEl.value = JSON.stringify(EXAMPLE_EVENT, null, 2);
-  }
-  loadExample();
-  resetBtn.addEventListener("click", loadExample);
-
-  function setStatus(kind, message) {
-    statusEl.className = "status-bar show status-" + kind;
-    statusEl.innerHTML = kind === "loading"
-      ? '<span class="spinner"></span>' + message
-      : message;
-  }
-
-  function clearStatus() {
-    statusEl.className = "status-bar";
-    statusEl.innerHTML = "";
-  }
-
-  function renderEmpty(message) {
-    outputEl.innerHTML = '<div class="empty-state">' + message + '</div>';
-  }
-
-  function renderResult(data) {
-    const relUpdates = (data.relationship_updates || [])
-      .map(u => {
-        const deltas = [
-          u.trust_delta ? `trust ${u.trust_delta > 0 ? "+" : ""}${u.trust_delta}` : null,
-          u.friendship_delta ? `friendship ${u.friendship_delta > 0 ? "+" : ""}${u.friendship_delta}` : null,
-          u.respect_delta ? `respect ${u.respect_delta > 0 ? "+" : ""}${u.respect_delta}` : null,
-          u.vote_delta ? `vote ${u.vote_delta > 0 ? "+" : ""}${u.vote_delta}` : null,
-        ].filter(Boolean).join(", ");
-        return '<div class="chip"><strong>' + escapeHtml(u.npc) + '</strong> — ' + escapeHtml(deltas || "no change") +
-          (u.reason ? '<br><span style="opacity:0.7">' + escapeHtml(u.reason) + '</span>' : "") + '</div>';
-      })
-      .join("") || '<div class="chip">No NPCs affected.</div>';
-
-    const world = data.world_updates || {};
-    const worldChips = [];
-    if (world.reputation_delta) {
-      worldChips.push('<div class="chip">Reputation ' + (world.reputation_delta > 0 ? "+" : "") + world.reputation_delta + '</div>');
+    function setStatus(kind, message) {
+      statusEl.className = "status-bar show status-" + kind;
+      statusEl.innerHTML = kind === "loading"
+        ? '<span class="spinner"></span>' + message
+        : message;
     }
-    (world.new_events || []).forEach(e => worldChips.push('<div class="chip">' + escapeHtml(e) + '</div>'));
-    const worldBlock = worldChips.join("") || '<div class="chip">No world changes.</div>';
 
-    const newMemories = (data.new_memories || [])
-      .map(m => '<div class="chip">' + escapeHtml(m) + '</div>')
-      .join("") || '<div class="chip">Nothing new extracted.</div>';
+    function renderEmpty(message) {
+      outputEl.innerHTML = '<div class="empty-state">' + message + '</div>';
+    }
 
-    const nextActions = (data.next_actions || [])
-      .map(a => '<div class="chip">' + escapeHtml(a) + '</div>')
-      .join("") || '<div class="chip">No suggestions.</div>';
+    function renderResult(data) {
+      const relUpdates = (data.relationship_updates || (data.consequences && data.consequences.relationship_updates) || [])
+        .map(u => {
+          const deltas = [
+            u.trust_delta ? `trust ${u.trust_delta > 0 ? "+" : ""}${u.trust_delta}` : null,
+            u.friendship_delta ? `friendship ${u.friendship_delta > 0 ? "+" : ""}${u.friendship_delta}` : null,
+            u.respect_delta ? `respect ${u.respect_delta > 0 ? "+" : ""}${u.respect_delta}` : null,
+            u.vote_delta ? `vote ${u.vote_delta > 0 ? "+" : ""}${u.vote_delta}` : null,
+          ].filter(Boolean).join(", ");
+          return '<div class="chip"><strong>' + escapeHtml(u.npc) + '</strong> — ' + escapeHtml(deltas || "no change") +
+            (u.reason ? '<br><span style="opacity:0.7">' + escapeHtml(u.reason) + '</span>' : "") + '</div>';
+        })
+        .join("") || '<div class="chip">No NPCs affected.</div>';
 
-    outputEl.innerHTML = `
-      <div class="story-box">${escapeHtml(data.story || "")}</div>
+      const world = data.world_updates || (data.consequences && data.consequences.world_updates) || {};
+      const worldChips = [];
+      if (world.reputation_delta) {
+        worldChips.push('<div class="chip">Reputation ' + (world.reputation_delta > 0 ? "+" : "") + world.reputation_delta + '</div>');
+      }
+      (world.new_events || []).forEach(e => worldChips.push('<div class="chip">' + escapeHtml(e) + '</div>'));
+      const worldBlock = worldChips.join("") || '<div class="chip">No world changes.</div>';
+
+      const newMemories = (data.new_memories || (data.consequences && data.consequences.new_memories) || [])
+        .map(m => '<div class="chip">' + escapeHtml(m) + '</div>')
+        .join("") || '<div class="chip">Nothing new extracted.</div>';
+
+      const nextActions = (data.next_actions || (data.consequences && data.consequences.next_actions) || [])
+        .map(a => '<div class="chip">' + escapeHtml(a) + '</div>')
+        .join("") || '<div class="chip">No suggestions.</div>';
+
+      const storyText = data.story || data.narrative || data.text || "";
+
+      outputEl.innerHTML = `
+      <div class="story-box">${escapeHtml(storyText)}</div>
       <div>
         <div class="section-title">Relationship updates</div>
         <div class="chip-list">${relUpdates}</div>
@@ -424,64 +476,66 @@
         <div class="chip-list">${nextActions}</div>
       </div>
     `;
-  }
-
-  function escapeHtml(str) {
-    const div = document.createElement("div");
-    div.textContent = str;
-    return div.innerHTML;
-  }
-
-  async function runRequest() {
-    let payload;
-    try {
-      payload = JSON.parse(inputEl.value);
-    } catch (err) {
-      setStatus("error", "Invalid JSON — fix the syntax before sending:\n" + err.message);
-      return;
     }
 
-    const url = endpointEl.value.trim();
-    if (!url) {
-      setStatus("error", "Enter the endpoint URL for your running backend.");
-      return;
+    function escapeHtml(str) {
+      const div = document.createElement("div");
+      div.textContent = str;
+      return div.innerHTML;
     }
 
-    runBtn.disabled = true;
-    setStatus("loading", "Contacting the narrative engine…");
-    renderEmpty("Generating…");
-
-    try {
-      const response = await fetch(url, {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify(payload)
-      });
-
-      if (!response.ok) {
-        const text = await response.text();
-        throw new Error("Server responded " + response.status + ": " + text);
+    async function runRequest() {
+      let payload;
+      try {
+        payload = JSON.parse(inputEl.value);
+      } catch (err) {
+        setStatus("error", "Invalid JSON — fix the syntax before sending:\n" + err.message);
+        return;
       }
 
-      const data = await response.json();
-      renderResult(data);
-      setStatus("success", "Story generated successfully.");
-    } catch (err) {
-      renderEmpty("No story yet — see the error below.");
-      setStatus(
-        "error",
-        "Request failed: " + err.message +
-        "\n\nCheck that:\n" +
-        "  • the FastAPI server is running (uv run uvicorn app.main:app --reload --port 8000)\n" +
-        "  • the endpoint URL above matches your server address\n" +
-        "  • your .env has valid MISTRAL_API_KEY / COGNEE_API_KEY values"
-      );
-    } finally {
-      runBtn.disabled = false;
-    }
-  }
+      const url = endpointEl.value.trim();
+      if (!url) {
+        setStatus("error", "Enter the endpoint URL for your running backend.");
+        return;
+      }
 
-  runBtn.addEventListener("click", runRequest);
-</script>
+      runBtn.disabled = true;
+      setStatus("loading", "Contacting the narrative engine…");
+      renderEmpty("Generating…");
+
+      try {
+        const response = await fetch(url, {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify(payload)
+        });
+
+        if (!response.ok) {
+          const text = await response.text();
+          throw new Error("Server responded " + response.status + ": " + text);
+        }
+
+        const data = await response.json();
+        renderResult(data);
+        setStatus("success", "Story generated successfully.");
+      } catch (err) {
+        renderEmpty("No story yet — see the error below.");
+        setStatus(
+          "error",
+          "Request failed: " + err.message +
+          "\n\nCheck that:\n" +
+          "  • the Render deployment is awake (free-tier services spin down and can take 30-60s to respond to the first request)\n" +
+          "  • the endpoint URL above includes the correct route (e.g. /game/event)\n" +
+          "  • CORS is enabled on the FastAPI app for this page's origin\n" +
+          "  • your deployed .env has valid MISTRAL_API_KEY / COGNEE_API_KEY values"
+        );
+      } finally {
+        runBtn.disabled = false;
+      }
+    }
+
+    runBtn.addEventListener("click", runRequest);
+  </script>
 </body>
+
 </html>
